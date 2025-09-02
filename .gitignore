@@ -1,5 +1,6 @@
 # Sensitive variable files
 *.tfvars
+*.tfvars.json
 
 # Local .terraform directories
 .terraform/
@@ -27,3 +28,27 @@ override.tf.json
 
 # Environment select info
 .terraform/environment
+
+## Ansible
+# Ignore Ansible log files
+*.log
+
+# Ignore Ansible retry files (created on failed runs)
+*.retry
+
+# Ignore Ansible Vault password files
+*vault*
+*.key
+
+# Ignore fact caching directories
+facts.d/
+
+## General / OS
+# VS Code
+.vscode/
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
