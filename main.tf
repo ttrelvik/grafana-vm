@@ -68,8 +68,19 @@ module "compute" {
 resource "null_resource" "ansible_provisioner" {
   # This ensures the provisioner only runs after the VM has been fully created
   depends_on = [
-    module.compute.vm_id
+    module.compute.vm_id,
+    azurerm_dns_a_record.main
   ]
+
+  triggers = {
+    # This trigger will change whenever the content of these files change,
+    # forcing the provisioner to re-run.
+    playbook_hash = filemd5("${path.root}/ansible/playbook.yml")
+    ansible_config_hash = filemd5("${path.root}/ansible/ansible.cfg")
+    compose_file_hash = filemd5("${path.root}/ansible/files/docker-compose.yml")
+    traefik_config_hash = filemd5("${path.root}/ansible/files/traefik.yml")
+    prometheus_config_hash = filemd5("${path.root}/ansible/files/prometheus.yml")
+  }
 
   # This provisioner creates the inventory file
   provisioner "local-exec" {
@@ -83,5 +94,9 @@ resource "null_resource" "ansible_provisioner" {
   provisioner "local-exec" {
     working_dir = "${path.root}/ansible"
     command     = "ansible-playbook -i inventory playbook.yml"
+    environment = {
+      # This passes the FQDN from dns.tf to Ansible
+      DOMAIN_NAME = azurerm_dns_a_record.main.fqdn
+    }
   }
 }

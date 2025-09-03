@@ -1,6 +1,11 @@
 ---
 - name: Configure and Deploy Observability Stack
   hosts: servers
+
+  vars:
+    # Get the domain_name from an environment variable
+    domain_name: "{{ lookup('env', 'DOMAIN_NAME') }}"
+
   tasks:
     - name: Update all apt packages to the latest version
       ansible.builtin.apt:
@@ -36,22 +41,31 @@
         state: directory
         mode: '0755'
 
-    - name: Copy docker-compose.yml to the remote host
+    - name: Copy files to the remote host
       ansible.builtin.copy:
-        src: files/docker-compose.yml
-        dest: /opt/stack/docker-compose.yml
+        src: "files/{{ item }}"
+        dest: "/opt/stack/{{ item }}"
+      with_items:
+        - docker-compose.yml
+        - prometheus.yml
+        - traefik.yml
 
-    - name: Copy prometheus.yml to the remote host
-      ansible.builtin.copy:
-        src: files/prometheus.yml
-        dest: /opt/stack/prometheus.yml
+    - name: Create acme.json for Let's Encrypt certificates
+      ansible.builtin.file:
+        path: /opt/stack/acme.json
+        state: touch
+        mode: '0600'
 
     - name: Tear down any existing containers
       ansible.builtin.command:
-        cmd: docker compose down
+        cmd: docker compose down --volumes
         chdir: /opt/stack
+      environment:
+        DOMAIN_NAME: "{{ domain_name }}"
 
     - name: Launch the observability stack with Docker Compose
       ansible.builtin.command:
         cmd: docker compose up -d
         chdir: /opt/stack
+      environment:
+        DOMAIN_NAME: "{{ domain_name }}"

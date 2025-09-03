@@ -1,0 +1,25 @@
+api:
+  insecure: true # Enables the Traefik dashboard
+
+entryPoints:
+  web:
+    address: ":80"
+    http:
+      redirections:
+        entryPoint:
+          to: "websecure"
+          scheme: "https"
+  websecure:
+    address: ":443"
+
+providers:
+  docker:
+    exposedByDefault: false
+
+certificatesResolvers:
+  letsencrypt:
+    acme:
+      email: "tom@trelvik.net"
+      storage: "acme.json"
+      httpChallenge:
+        entryPoint: "web"
