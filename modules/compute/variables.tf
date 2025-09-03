@@ -36,7 +36,7 @@ variable "network_security_group_id" {
 variable "vm_size" {
   description = "Size of the virtual machine"
   type        = string
-  default = "Standard_B1s"
+  default     = "Standard_B1s"
 }
 
 variable "admin_username" {
@@ -47,5 +47,5 @@ variable "admin_username" {
 variable "ssh_public_key" {
   description = "SSH public key for the VM"
   type        = string
-  sensitive = true
+  sensitive   = true
 }

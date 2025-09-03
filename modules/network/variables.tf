@@ -21,11 +21,11 @@ variable "tags" {
 variable "vnet_address_spaces" {
   description = "Address space for the virtual network"
   type        = list(string)
-  default = ["10.0.0.0/16"]
+  default     = ["10.0.0.0/16"]
 }
 
 variable "subnet_address_prefixes" {
   description = "Address prefix for the subnet"
   type        = list(string)
-  default = ["10.0.1.0/24"]
+  default     = ["10.0.1.0/24"]
 }
