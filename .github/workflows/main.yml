@@ -39,11 +39,13 @@ jobs:
 
       - name: Terraform Init
         id: init
-        run: terraform init
+        run: terraform init -input=false
+        env:
+          TF_WORKSPACE: grafana-dev
 
       - name: Terraform Validate
         id: validate
-        run: terraform validate -no-color
+        run: terraform validate -no-color -input=false
 
       - name: Terraform Plan
         id: plan
