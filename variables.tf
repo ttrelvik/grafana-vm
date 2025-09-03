@@ -63,3 +63,15 @@ variable "home_ddns_hostname" {
   type        = string
   sensitive   = true
 }
+
+variable "dns_zone_name" {
+  description = "The name of the existing Azure DNS Zone."
+  type        = string
+  default     = "az.trelvik.net"
+}
+
+variable "dns_resource_group_name" {
+  description = "The name of the resource group where the DNS zone is located."
+  type        = string
+  default     = "rgDns"
+}

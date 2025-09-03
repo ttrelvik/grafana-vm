@@ -52,15 +52,51 @@ module "security" {
 }
 
 module "compute" {
-  source                = "./modules/compute"
-  prefix                = local.env_vars.prefix
-  location              = azurerm_resource_group.rg.location
-  resource_group_name   = azurerm_resource_group.rg.name
-  tags                  = var.tags
-  subnet_id             = module.network.subnet_id
-  public_ip_id          = module.network.public_ip_id
+  source                    = "./modules/compute"
+  prefix                    = local.env_vars.prefix
+  location                  = azurerm_resource_group.rg.location
+  resource_group_name       = azurerm_resource_group.rg.name
+  tags                      = var.tags
+  subnet_id                 = module.network.subnet_id
+  public_ip_id              = module.network.public_ip_id
   network_security_group_id = module.security.network_security_group_id
-  vm_size               = var.vm_size
-  admin_username        = var.admin_username
-  ssh_public_key        = var.ssh_public_key
+  vm_size                   = var.vm_size
+  admin_username            = var.admin_username
+  ssh_public_key            = var.ssh_public_key
+}
+
+resource "null_resource" "ansible_provisioner" {
+  # This ensures the provisioner only runs after the VM has been fully created
+  depends_on = [
+    module.compute.vm_id,
+    azurerm_dns_a_record.main
+  ]
+
+  triggers = {
+    # This trigger will change whenever the content of these files change,
+    # forcing the provisioner to re-run.
+    playbook_hash = filemd5("${path.root}/ansible/playbook.yml")
+    ansible_config_hash = filemd5("${path.root}/ansible/ansible.cfg")
+    compose_file_hash = filemd5("${path.root}/ansible/files/docker-compose.yml")
+    traefik_config_hash = filemd5("${path.root}/ansible/files/traefik.yml")
+    prometheus_config_hash = filemd5("${path.root}/ansible/files/prometheus.yml")
+  }
+
+  # This provisioner creates the inventory file
+  provisioner "local-exec" {
+    command = <<EOT
+      echo '[servers]' > ./ansible/inventory
+      echo 'grafana-vm ansible_host=${module.network.public_ip_address}' >> ./ansible/inventory
+    EOT
+  }
+
+  # This provisioner runs the playbook
+  provisioner "local-exec" {
+    working_dir = "${path.root}/ansible"
+    command     = "ansible-playbook -i inventory playbook.yml"
+    environment = {
+      # This passes the FQDN from dns.tf to Ansible
+      DOMAIN_NAME = azurerm_dns_a_record.main.fqdn
+    }
+  }
 }
