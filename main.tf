@@ -1,7 +1,7 @@
 terraform {
   required_providers {
-    azurerm = { 
-        source = "hashicorp/azurerm"  
+    azurerm = {
+      source = "hashicorp/azurerm"
     }
     dns = {
       source = "hashicorp/dns"
@@ -10,7 +10,7 @@ terraform {
   cloud {
     organization = "trelvik_net"
     workspaces {
-      tags = { project = "grafana" }    
+      tags = { project = "grafana" }
     }
   }
 }
@@ -29,7 +29,7 @@ data "dns_a_record_set" "home_ip" {
 resource "azurerm_resource_group" "rg" {
   name     = "rg-${local.env_vars.prefix}"
   location = var.location
-  tags     = var.tags 
+  tags     = var.tags
 }
 
 module "network" {
@@ -43,12 +43,12 @@ module "network" {
 }
 
 module "security" {
-  source                        = "./modules/security"
-  prefix                        = local.env_vars.prefix
-  location                      = azurerm_resource_group.rg.location
-  resource_group_name           = azurerm_resource_group.rg.name
-  tags                          = var.tags
-  ssh_source_address_prefix     = "${data.dns_a_record_set.home_ip.addrs[0]}/32"
+  source                    = "./modules/security"
+  prefix                    = local.env_vars.prefix
+  location                  = azurerm_resource_group.rg.location
+  resource_group_name       = azurerm_resource_group.rg.name
+  tags                      = var.tags
+  ssh_source_address_prefix = "${data.dns_a_record_set.home_ip.addrs[0]}/32"
 }
 
 module "compute" {
@@ -75,10 +75,10 @@ resource "null_resource" "ansible_provisioner" {
   triggers = {
     # This trigger will change whenever the content of these files change,
     # forcing the provisioner to re-run.
-    playbook_hash = filemd5("${path.root}/ansible/playbook.yml")
-    ansible_config_hash = filemd5("${path.root}/ansible/ansible.cfg")
-    compose_file_hash = filemd5("${path.root}/ansible/files/docker-compose.yml")
-    traefik_config_hash = filemd5("${path.root}/ansible/files/traefik.yml")
+    playbook_hash          = filemd5("${path.root}/ansible/playbook.yml")
+    ansible_config_hash    = filemd5("${path.root}/ansible/ansible.cfg")
+    compose_file_hash      = filemd5("${path.root}/ansible/files/docker-compose.yml")
+    traefik_config_hash    = filemd5("${path.root}/ansible/files/traefik.yml")
     prometheus_config_hash = filemd5("${path.root}/ansible/files/prometheus.yml")
   }
 
