@@ -15,10 +15,12 @@ resource "azurerm_network_security_rule" "ssh" {
   protocol                    = "Tcp"
   source_port_range           = "*"
   destination_port_range      = "22"
-  source_address_prefix       = var.ssh_source_address_prefix
   destination_address_prefix  = "*"
   resource_group_name         = var.resource_group_name
   network_security_group_name = azurerm_network_security_group.main.name
+
+  # Allow SSH from multiple source IPs. Append /32 to each IP to specify single host.
+  source_address_prefixes = [for ip in var.ssh_source_addresses : "${ip}/32"]
 }
 
 # Rule for Traefik HTTP (for Let's Encrypt challenge)
