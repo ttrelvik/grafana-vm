@@ -119,8 +119,33 @@ jobs:
         with:
           cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
 
+      - name: Get Runner's Public IP
+        id: ip
+        uses: haythem/public-ip@v1.2
+
       - name: Terraform Init
         run: terraform init -input=false
 
       - name: Terraform Apply
-        run: terraform apply -auto-approve -input=false
+        run: terraform apply -auto-approve -input=false -var="runner_ip_address=${{ steps.ip.outputs.ipv4 }}"
+
+      - name: Get Terraform Outputs
+        id: outputs
+        run: |
+          echo "vm_ip=$(terraform output -raw vm_public_ip)" >> $GITHUB_OUTPUT
+          echo "fqdn=$(terraform output -raw fqdn)" >> $GITHUB_OUTPUT
+      
+      - name: Run Ansible Playbook
+        uses: dawidd6/action-ansible-playbook@v2
+        env:
+          DOMAIN_NAME: ${{ steps.outputs.outputs.fqdn }}
+        with:
+          playbook: ansible/playbook.yml
+          directory: ./ansible
+          inventory: |
+            [servers]
+            ${{ steps.outputs.outputs.vm_ip }}
+            
+            [all:vars]
+            ansible_user=azureuser
+          key: ${{ secrets.SSH_PRIVATE_KEY }}

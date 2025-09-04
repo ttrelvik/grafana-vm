@@ -64,6 +64,12 @@ variable "home_ddns_hostname" {
   sensitive   = true
 }
 
+variable "runner_ip_address" {
+  description = "The IP address of the GitHub Runner to allow for SSH."
+  type        = string
+  default     = ""
+}
+
 variable "dns_zone_name" {
   description = "The name of the existing Azure DNS Zone."
   type        = string

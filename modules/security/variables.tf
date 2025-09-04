@@ -18,7 +18,8 @@ variable "tags" {
   type        = map(string)
 }
 
-variable "ssh_source_address_prefix" {
-  description = "Source address range for SSH access. For security, this should be a specific IP."
-  type        = string
+variable "ssh_source_addresses" {
+  description = "A list of source IP addresses to allow for SSH access."
+  type        = list(string)
+  default     = []
 }
