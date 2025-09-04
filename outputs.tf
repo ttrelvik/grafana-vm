@@ -22,9 +22,9 @@ output "fqdn" {
 output "dashboard_urls" {
   description = "URLs for the deployed services."
   value = {
+    traefik    = "https://traefik.${local.clean_fqdn}"
     grafana    = "https://grafana.${local.clean_fqdn}"
     prometheus = "https://prometheus.${local.clean_fqdn}"
     loki       = "https://loki.${local.clean_fqdn}/ready"
-    traefik    = "https://traefik.${local.clean_fqdn}"
   }
 }

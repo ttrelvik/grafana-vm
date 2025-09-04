@@ -1,0 +1,35 @@
+---
+- name: Create a directory for the observability stack
+  ansible.builtin.file:
+    path: /opt/stack
+    state: directory
+    mode: '0755'
+
+- name: Copy files to the remote host
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: "/opt/stack/{{ item }}"
+  with_items:
+    - docker-compose.yml
+    - prometheus.yml
+    - traefik.yml
+
+- name: Create acme.json for Let's Encrypt certificates
+  ansible.builtin.file:
+    path: /opt/stack/acme.json
+    state: touch
+    mode: '0600'
+
+- name: Tear down any existing containers
+  ansible.builtin.command:
+    cmd: docker compose down --volumes
+    chdir: /opt/stack
+  environment:
+    DOMAIN_NAME: "{{ domain_name }}"
+
+- name: Launch the observability stack with Docker Compose
+  ansible.builtin.command:
+    cmd: docker compose up -d
+    chdir: /opt/stack
+  environment:
+    DOMAIN_NAME: "{{ domain_name }}"
