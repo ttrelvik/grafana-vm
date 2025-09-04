@@ -10,17 +10,18 @@ on:
     branches:
       - main
 
-# These permissions are needed for the workflow to interact with your repository
-permissions:
-  contents: read
-  pull-requests: write
-
 jobs:
   validate:
     name: "Validate and Plan"
     runs-on: ubuntu-latest
     # This job will only run on pull request events
     if: github.event_name == 'pull_request'
+
+    # Permissions for the 'validate' job
+    permissions:
+      contents: read          # To checkout the repository
+      pull-requests: write   # To post comments on the PR
+      security-events: write # To upload Trivy scan results
 
     # Set environment variables for all steps in this job
     env:
@@ -46,6 +47,20 @@ jobs:
         id: fmt
         run: terraform fmt -check -recursive
         continue-on-error: true
+
+      - name: Run Trivy scan for IaC misconfigurations
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'config'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          severity: 'HIGH,CRITICAL'
+
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: 'trivy-results.sarif'
 
       - name: Terraform Init
         id: init
@@ -99,7 +114,11 @@ jobs:
     runs-on: ubuntu-latest
     # This job will only run on pushes to the main branch
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    
+
+    # Permissions for the 'deploy' job
+    permissions:
+      contents: read # Only needs to read the repo to checkout
+
     # Set environment variables for all steps in this job
     env:
       TF_WORKSPACE: grafana-prod
