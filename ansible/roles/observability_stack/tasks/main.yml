@@ -5,7 +5,7 @@
     state: directory
     mode: '0755'
 
-- name: Copy files to the remote host
+- name: Copy configuration files to the remote host
   ansible.builtin.copy:
     src: "{{ item }}"
     dest: "/opt/stack/{{ item }}"
@@ -13,6 +13,7 @@
     - docker-compose.yml
     - prometheus.yml
     - traefik.yml
+  register: config_files # Register the result to check later
 
 - name: Create acme.json for Let's Encrypt certificates
   ansible.builtin.file:
@@ -20,16 +21,18 @@
     state: touch
     mode: '0600'
 
-- name: Tear down any existing containers
+- name: Tear down any existing containers if config changed
   ansible.builtin.command:
-    cmd: docker compose down --volumes
+    cmd: docker compose down
     chdir: /opt/stack
   environment:
     DOMAIN_NAME: "{{ domain_name }}"
+  when: config_files.changed
 
-- name: Launch the observability stack with Docker Compose
+- name: Launch or update the observability stack
   ansible.builtin.command:
     cmd: docker compose up -d
     chdir: /opt/stack
   environment:
     DOMAIN_NAME: "{{ domain_name }}"
+  when: config_files.changed
