@@ -5,6 +5,15 @@
 
   vars:
     domain_name: "{{ lookup('env', 'DOMAIN_NAME') }}"
+    grafana_oauth_client_secret: "{{ lookup('env', 'GRAFANA_OAUTH_CLIENT_SECRET') }}"
+    grafana_oauth_client_id: "{{ lookup('env', 'GRAFANA_OAUTH_CLIENT_ID') }}"
+    grafana_oauth_tenant_id: "{{ lookup('env', 'GRAFANA_OAUTH_TENANT_ID') }}"
+    grafana_oauth_admin_group_id: "{{ lookup('env', 'GRAFANA_OAUTH_ADMIN_GROUP_ID') }}"
+    grafana_smtp_enabled: "{{ lookup('env', 'GRAFANA_SMTP_ENABLED') | default('false') }}"
+    grafana_smtp_host: "{{ lookup('env', 'GRAFANA_SMTP_HOST') }}"
+    grafana_smtp_user: "{{ lookup('env', 'GRAFANA_SMTP_USER') }}"
+    grafana_smtp_password: "{{ lookup('env', 'GRAFANA_SMTP_PASSWORD') }}"
+    grafana_smtp_from_address: "{{ lookup('env', 'GRAFANA_SMTP_FROM_ADDRESS') }}"
 
   roles:
     - role: docker
