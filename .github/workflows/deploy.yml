@@ -57,6 +57,15 @@ jobs:
         uses: dawidd6/action-ansible-playbook@v2
         env:
           DOMAIN_NAME: ${{ steps.outputs.outputs.fqdn }}
+          GRAFANA_OAUTH_CLIENT_SECRET: ${{ secrets.GRAFANA_OAUTH_CLIENT_SECRET }}
+          GRAFANA_OAUTH_CLIENT_ID: ${{ secrets.GRAFANA_OAUTH_CLIENT_ID }}
+          GRAFANA_OAUTH_TENANT_ID: ${{ secrets.GRAFANA_OAUTH_TENANT_ID }}
+          GRAFANA_OAUTH_ADMIN_GROUP_ID: ${{ secrets.GRAFANA_OAUTH_ADMIN_GROUP_ID }}
+          GRAFANA_SMTP_ENABLED: ${{ secrets.GRAFANA_SMTP_ENABLED }}
+          GRAFANA_SMTP_HOST: ${{ secrets.GRAFANA_SMTP_HOST }}
+          GRAFANA_SMTP_USER: ${{ secrets.GRAFANA_SMTP_USER }}
+          GRAFANA_SMTP_PASSWORD: ${{ secrets.GRAFANA_SMTP_PASSWORD }}
+          GRAFANA_SMTP_FROM_ADDRESS: ${{ secrets.GRAFANA_SMTP_FROM_ADDRESS }}
         with:
           playbook: playbook.yml
           directory: ./ansible
