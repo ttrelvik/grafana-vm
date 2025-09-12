@@ -1,8 +1,13 @@
 ---
-- name: Update all apt packages to the latest version
+- name: Update apt cache if older than 1 hour
+  ansible.builtin.apt:
+    update_cache: yes
+    cache_valid_time: 3600 # Time in seconds
+
+- name: Upgrade all apt packages to the latest version
   ansible.builtin.apt:
     upgrade: dist
-    update_cache: yes
+    force_apt_get: yes # Use apt-get instead of apt to avoid some interactive prompts
 
 - name: Install prerequisites for Docker repository
   ansible.builtin.apt:
