@@ -79,6 +79,21 @@ services:
       - "traefik.http.services.grafana.loadbalancer.server.port=3000"
       - "traefik.http.services.grafana.loadbalancer.server.scheme=http" # Ensure Traefik uses HTTP to communicate with Grafana
 
+  node-exporter:
+    image: prom/node-exporter:v1.9.1
+    container_name: node-exporter
+    restart: unless-stopped
+    networks:
+      - web
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+
 # Define the named volumes
 volumes:
   grafana-data:
