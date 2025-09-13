@@ -13,6 +13,7 @@
     - docker-compose.yml
     - prometheus.yml
     - traefik.yml
+    - grafana-config/
   register: config_files # Register the result to check later
 
 - name: Create acme.json for Let's Encrypt certificates
