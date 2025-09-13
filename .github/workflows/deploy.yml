@@ -53,6 +53,9 @@ jobs:
       - name: Wait for NSG rules to propagate
         run: sleep 45
 
+      - name: Install Ansible community.docker collection
+        run: ansible-galaxy collection install -r ./ansible/requirements.yml
+
       - name: Run Ansible Playbook
         uses: dawidd6/action-ansible-playbook@v2
         env:
