@@ -8,15 +8,14 @@
   ansible.builtin.set_fact:
     docker_installed: docker_binary.stat.exists
 
-- name: Update apt cache if older than 1 hour
-  ansible.builtin.apt:
-    update_cache: yes
-    cache_valid_time: 3600 # Time in seconds
-
-- name: Upgrade all apt packages to the latest version
-  ansible.builtin.apt:
-    upgrade: dist
-    force_apt_get: yes # More stable for automation
+- name: Wait for unattended-upgrades to complete
+  ansible.builtin.shell: |
+    while fuser /var/lib/dpkg/lock >/dev/null 2>&1 ; do
+      echo 'Waiting for other software managers to finish...'
+      sleep 5
+    done
+  when: not docker_installed
+  changed_when: false
 
 - name: Install prerequisites for Docker repository
   ansible.builtin.apt:
