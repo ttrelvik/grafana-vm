@@ -70,7 +70,8 @@ services:
     networks:
       - web
     volumes:
-      - grafana-data:/var/lib/grafana # named volume for Grafana data
+      - grafana-data:/var/lib/grafana                           # named volume for Grafana data
+      - ./grafana-config/provisioning:/etc/grafana/provisioning # Bind mount for provisioning config
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.grafana.rule=Host(`grafana.${DOMAIN_NAME}`)"
