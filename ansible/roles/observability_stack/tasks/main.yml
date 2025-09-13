@@ -23,7 +23,7 @@
     mode: '0600'
 
 - name: Deploy observability stack via Docker Compose
-  community.docker.docker_compose:
+  community.docker.docker_compose_v2:
     project_src: /opt/stack
     state: present
   environment:
