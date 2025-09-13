@@ -51,7 +51,7 @@ jobs:
           echo "fqdn=$(terraform output -raw fqdn)" >> $GITHUB_OUTPUT
 
       - name: Wait for NSG rules to propagate
-        run: sleep 90
+        run: sleep 45
 
       - name: Run Ansible Playbook
         uses: dawidd6/action-ansible-playbook@v2

@@ -43,3 +43,4 @@
     state: present
     update_cache: yes
   when: not docker_installed
+  notify: Reboot the server to finalize Docker installation
