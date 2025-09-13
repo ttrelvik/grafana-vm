@@ -1,5 +1,5 @@
 ---
-- name: Create a directory for the observability stack
+- name: Ensure observability stack directory exists
   ansible.builtin.file:
     path: /opt/stack
     state: directory
@@ -14,26 +14,22 @@
     - prometheus.yml
     - traefik.yml
     - grafana-config/
-  register: config_files # Register the result to check later
+  register: config_files
 
-- name: Create acme.json for Let's Encrypt certificates
+- name: Ensure acme.json for Let's Encrypt exists
   ansible.builtin.file:
     path: /opt/stack/acme.json
     state: touch
     mode: '0600'
 
-- name: Tear down any existing containers if config changed
-  ansible.builtin.command:
-    cmd: docker compose down
-    chdir: /opt/stack
+- name: Deploy observability stack via Docker Compose
+  community.docker.docker_compose:
+    project_src: /opt/stack
+    state: present
   environment:
     DOMAIN_NAME: "{{ domain_name }}"
-  when: config_files.changed
+  register: compose_result
 
-- name: Launch or update the observability stack
-  ansible.builtin.command:
-    cmd: docker compose up -d
-    chdir: /opt/stack
-  environment:
-    DOMAIN_NAME: "{{ domain_name }}"
-  when: config_files.changed
+- name: Debug what happened
+  ansible.builtin.debug:
+    var: compose_result
