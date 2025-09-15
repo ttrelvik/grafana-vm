@@ -4,15 +4,19 @@ observability_config:
   
   base_directory: /opt/stack
   
-  # Individual files to copy
+  # Static files to be copied
   files:
     - name: docker-compose.yml
       mode: '0644'
-    - name: prometheus.yml  
+    - name: prometheus.yml
       mode: '0644'
+
+  # Templated files to be processed
+  templated_files:
     - name: traefik.yml
+      dest_name: traefik.yml # The final name on the server
+      src_name: traefik.yml.j2 # The source template name
       mode: '0644'
-    # Add more files here as needed
   
   # Directories to copy
   directories:
@@ -26,7 +30,6 @@ observability_config:
       dest: promtail-config/
       file_mode: '0644'
       dir_mode: '0755'
-    # Add more directories here as needed
   
   # Special files with custom permissions
   special_files:

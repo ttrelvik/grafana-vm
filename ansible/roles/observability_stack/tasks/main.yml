@@ -5,12 +5,19 @@
     state: directory
     mode: '0755'
 
-- name: Copy configuration files
+- name: Copy static configuration files
   ansible.builtin.copy:
     src: "{{ item.name }}"
     dest: "{{ observability_config.base_directory }}/{{ item.name }}"
     mode: "{{ item.mode }}"
   loop: "{{ observability_config.files }}"
+
+- name: Copy templated configuration files
+  ansible.builtin.template:
+    src: "{{ item.src_name }}"
+    dest: "{{ observability_config.base_directory }}/{{ item.dest_name }}"
+    mode: "{{ item.mode }}"
+  loop: "{{ observability_config.templated_files }}"
 
 - name: Copy configuration directories
   ansible.builtin.copy:
