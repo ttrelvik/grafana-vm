@@ -41,7 +41,12 @@
     project_src: /opt/stack
     state: present
   environment:
-    DOMAIN_NAME: "{{ domain_name }}"
+    DOMAIN_NAME: "{{ lookup('env', 'DOMAIN_NAME') }}"
+    ENTRA_TENANT_ID: "{{ lookup('env', 'ENTRA_TENANT_ID') }}"
+    ENTRA_CLIENT_ID: "{{ lookup('env', 'ENTRA_CLIENT_ID') }}"
+    ENTRA_CLIENT_SECRET: "{{ lookup('env', 'ENTRA_CLIENT_SECRET') }}"
+    FORWARD_AUTH_SECRET: "{{ lookup('env', 'FORWARD_AUTH_SECRET') }}"
+    ALLOWED_USERS: "{{ lookup('env', 'ALLOWED_USERS') }}"
   register: compose_result
   retries: 3
   delay: 10

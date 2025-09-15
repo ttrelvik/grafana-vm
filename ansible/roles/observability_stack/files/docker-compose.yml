@@ -28,6 +28,41 @@ services:
       - "traefik.http.routers.traefik.tls=true"
       - "traefik.http.routers.traefik.tls.certresolver=letsencrypt"
 
+      # --- SSO Middleware for the dashboard ---
+      - "traefik.http.routers.traefik.middlewares=sso-auth"
+      - "traefik.http.middlewares.sso-auth.forwardauth.address=http://traefik-forward-auth:4181"
+      - "traefik.http.middlewares.sso-auth.forwardauth.authResponseHeaders=X-Forwarded-User"
+
+  traefik-forward-auth:
+    image: thomseddon/traefik-forward-auth:2
+    container_name: traefik-forward-auth
+    restart: unless-stopped
+    networks:
+      - web
+    environment:
+      # --- Entra ID OIDC Provider Configuration ---
+      - "DEFAULT_PROVIDER=oidc"
+      - "PROVIDERS_OIDC_ISSUER_URL=https://login.microsoftonline.com/${ENTRA_TENANT_ID}/v2.0"
+      - "PROVIDERS_OIDC_CLIENT_ID=${ENTRA_CLIENT_ID}"
+      - "PROVIDERS_OIDC_CLIENT_SECRET=${ENTRA_CLIENT_SECRET}"
+
+      # --- General Auth Configuration ---
+      - "SECRET=${FORWARD_AUTH_SECRET}"
+      - "AUTH_HOST=auth.${DOMAIN_NAME}"
+      - "COOKIE_DOMAIN=.${DOMAIN_NAME}" # Leading dot for subdomains
+
+      # --- User Access Control ---
+      - "WHITELIST=${ALLOWED_USERS}"  # Comma-separated list of allowed user emails
+      - "LOG_LEVEL=info"
+    labels:
+      - "traefik.enable=true"
+      # --- Router for the auth service and callback ---
+      - "traefik.http.routers.forward-auth.rule=Host(`auth.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.forward-auth.entrypoints=websecure"
+      - "traefik.http.routers.forward-auth.tls=true"
+      - "traefik.http.routers.forward-auth.tls.certresolver=letsencrypt"
+      - "traefik.http.services.forward-auth.loadbalancer.server.port=4181"
+
   loki:
     image: grafana/loki:latest
     container_name: loki
