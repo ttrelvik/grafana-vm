@@ -21,6 +21,8 @@
       - gnupg
     state: present
     update_cache: yes
+  environment:
+    DEBIAN_FRONTEND: noninteractive
 
 - name: Ensure Docker GPG key is present
   ansible.builtin.get_url:
@@ -44,6 +46,8 @@
       - docker-compose-plugin
     state: present
     update_cache: yes
+  environment:
+    DEBIAN_FRONTEND: noninteractive
 
 - name: Make sure Docker service is enabled and running
   ansible.builtin.service:
