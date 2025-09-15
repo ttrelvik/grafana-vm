@@ -1,4 +1,38 @@
 ---
+- name: PRE-FLIGHT | Check if the dpkg lock is held by a process
+  ansible.builtin.shell:
+    # lsof will exit with 1 if it doesn't find any process using the file
+    cmd: "lsof /var/lib/dpkg/lock-frontend"
+  register: dpkg_lock_check
+  failed_when: false # We expect this to fail if the lock is stale
+  changed_when: false
+
+- name: PRE-FLIGHT | Kill hanging Ansible apt process if lock is stale
+  ansible.builtin.shell:
+    cmd: "pkill -9 -f AnsiballZ_apt.py || true"
+  changed_when: false
+  # Only run this if the lsof command failed (i.e., the lock is stale)
+  when: dpkg_lock_check.rc != 0
+
+- name: PRE-FLIGHT | Remove stale apt lock files if lock is stale
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - /var/lib/dpkg/lock
+    - /var/lib/dpkg/lock-frontend
+    - /var/lib/apt/lists/lock
+    - /var/cache/apt/archives/lock
+  # Only run this if the lsof command failed (i.e., the lock is stale)
+  when: dpkg_lock_check.rc != 0
+
+- name: PRE-FLIGHT | Reconfigure dpkg if it was interrupted
+  ansible.builtin.shell:
+    cmd: "dpkg --configure -a"
+  changed_when: false
+  # Only run this if the lsof command failed (i.e., the lock is stale)
+  when: dpkg_lock_check.rc != 0
+
 - name: Ensure docker group exists
   ansible.builtin.group:
     name: docker
