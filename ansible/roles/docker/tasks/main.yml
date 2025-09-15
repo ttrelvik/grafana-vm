@@ -1,20 +1,26 @@
 ---
 - name: PRE-FLIGHT | Check if the dpkg lock is held by a process
-  ansible.builtin.shell:
-    # lsof will exit with 1 if it doesn't find any process using the file
+  ansible.builtin.command:
     cmd: "lsof /var/lib/dpkg/lock-frontend"
   register: dpkg_lock_check
-  failed_when: false # We expect this to fail if the lock is stale
+  failed_when: false
   changed_when: false
 
-- name: PRE-FLIGHT | Kill hanging Ansible apt process if lock is stale
-  ansible.builtin.shell:
-    cmd: "pkill -9 -f AnsiballZ_apt.py || true"
-  changed_when: false
-  # Only run this if the lsof command failed (i.e., the lock is stale)
+- name: PRE-FLIGHT | Find the PID of the hanging Ansible apt process
+  community.general.pids:
+    pattern: "AnsiballZ_apt.py"
+  register: apt_process
   when: dpkg_lock_check.rc != 0
 
-- name: PRE-FLIGHT | Remove stale apt lock files if lock is stale
+- name: PRE-FLIGHT | Kill the hanging process by its PID
+  ansible.builtin.command:
+    # We surgically kill the *exact* PID we found.
+    cmd: "kill -9 {{ item }}"
+  loop: "{{ apt_process.pids }}"
+  # This ensures the task doesn't fail if the pids list is empty
+  when: apt_process.pids | length > 0
+
+- name: PRE-FLIGHT | Remove stale apt lock files
   ansible.builtin.file:
     path: "{{ item }}"
     state: absent
@@ -23,14 +29,12 @@
     - /var/lib/dpkg/lock-frontend
     - /var/lib/apt/lists/lock
     - /var/cache/apt/archives/lock
-  # Only run this if the lsof command failed (i.e., the lock is stale)
   when: dpkg_lock_check.rc != 0
 
 - name: PRE-FLIGHT | Reconfigure dpkg if it was interrupted
   ansible.builtin.shell:
     cmd: "dpkg --configure -a"
   changed_when: false
-  # Only run this if the lsof command failed (i.e., the lock is stale)
   when: dpkg_lock_check.rc != 0
 
 - name: Ensure docker group exists
@@ -55,8 +59,6 @@
       - gnupg
     state: present
     update_cache: yes
-  environment:
-    DEBIAN_FRONTEND: noninteractive
 
 - name: Ensure Docker GPG key is present
   ansible.builtin.get_url:
@@ -80,8 +82,6 @@
       - docker-compose-plugin
     state: present
     update_cache: yes
-  environment:
-    DEBIAN_FRONTEND: noninteractive
 
 - name: Make sure Docker service is enabled and running
   ansible.builtin.service:
