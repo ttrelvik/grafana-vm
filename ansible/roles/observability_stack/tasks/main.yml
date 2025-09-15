@@ -1,26 +1,33 @@
 ---
-- name: Ensure observability stack directory exists
+- name: Ensure base directory exists
   ansible.builtin.file:
-    path: /opt/stack
+    path: "{{ observability_config.base_directory }}"
     state: directory
     mode: '0755'
 
-- name: Copy configuration files to the remote host
+- name: Copy configuration files
   ansible.builtin.copy:
-    src: "{{ item }}"
-    dest: "/opt/stack/{{ item }}"
-  with_items:
-    - docker-compose.yml
-    - prometheus.yml
-    - traefik.yml
-    - grafana-config/
-  register: config_files
+    src: "{{ item.name }}"
+    dest: "{{ observability_config.base_directory }}/{{ item.name }}"
+    mode: "{{ item.mode }}"
+  loop: "{{ observability_config.files }}"
 
-- name: Ensure acme.json for Let's Encrypt exists
+- name: Copy configuration directories
+  ansible.builtin.copy:
+    src: "{{ item.src }}"
+    dest: "{{ observability_config.base_directory }}/{{ item.dest }}"
+    mode: "{{ item.file_mode }}"
+    directory_mode: "{{ item.dir_mode }}"
+  loop: "{{ observability_config.directories }}"
+
+- name: Handle special files
   ansible.builtin.file:
-    path: /opt/stack/acme.json
-    state: touch
-    mode: '0600'
+    path: "{{ observability_config.base_directory }}/{{ item.path }}"
+    state: "{{ item.state | default('file') }}"
+    mode: "{{ item.mode }}"
+    owner: "{{ item.owner | default(omit) }}"
+    group: "{{ item.group | default(omit) }}"
+  loop: "{{ observability_config.special_files }}"
 
 - name: Deploy observability stack via Docker Compose
   community.docker.docker_compose_v2:
@@ -29,7 +36,10 @@
   environment:
     DOMAIN_NAME: "{{ domain_name }}"
   register: compose_result
+  retries: 3
+  delay: 10
 
 - name: Debug what happened
   ansible.builtin.debug:
     var: compose_result
+    verbosity: 1

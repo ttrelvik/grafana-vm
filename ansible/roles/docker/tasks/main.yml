@@ -1,4 +1,18 @@
 ---
+- name: Ensure docker group exists
+  ansible.builtin.group:
+    name: docker
+    state: present
+
+- name: Add remote user to docker group
+  ansible.builtin.user:
+    name: "{{ remote_user }}"
+    groups: docker
+    append: yes
+
+- name: Reset SSH connection to apply group changes
+  ansible.builtin.meta: reset_connection
+
 - name: Ensure prerequisites are installed
   ansible.builtin.apt:
     name:

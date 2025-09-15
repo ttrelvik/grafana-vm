@@ -19,7 +19,7 @@ providers:
 certificatesResolvers:
   letsencrypt:
     acme:
-      email: "tom@trelvik.net"
+      email: "{{ acme_email }}"
       storage: "acme.json"
       httpChallenge:
         entryPoint: "web"

@@ -1,5 +1,0 @@
----
-- name: Reboot the server to finalize Docker installation
-  ansible.builtin.reboot:
-    msg: "Rebooting to apply user group changes for Docker"
-    reboot_timeout: 300
