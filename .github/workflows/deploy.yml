@@ -69,7 +69,8 @@ jobs:
         with:
           playbook: playbook.yml
           directory: ./ansible
-          verbosity: "vvv"
+          options: |
+            --verbose
           inventory: |
             [servers]
             ${{ steps.outputs.outputs.vm_ip }}
