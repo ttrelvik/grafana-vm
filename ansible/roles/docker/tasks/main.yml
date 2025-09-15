@@ -6,19 +6,14 @@
   failed_when: false
   changed_when: false
 
-- name: PRE-FLIGHT | Find the PID of the hanging Ansible apt process
-  community.general.pids:
-    pattern: "AnsiballZ_apt.py"
-  register: apt_process
+- name: PRE-FLIGHT | Find and kill hanging Ansible apt process if lock is stale
+  ansible.builtin.shell:
+    # This command finds the 'AnsiballZ_apt.py' process, excludes the 'grep' process itself,
+    # extracts the PID, and then passes it to 'kill -9'.
+    # It will not fail if no process is found.
+    cmd: "ps aux | grep AnsiballZ_apt.py | grep -v grep | awk '{print $2}' | xargs -r kill -9"
+  changed_when: false
   when: dpkg_lock_check.rc != 0
-
-- name: PRE-FLIGHT | Kill the hanging process by its PID
-  ansible.builtin.command:
-    # We surgically kill the *exact* PID we found.
-    cmd: "kill -9 {{ item }}"
-  loop: "{{ apt_process.pids }}"
-  # This ensures the task doesn't fail if the pids list is empty
-  when: apt_process.pids | length > 0
 
 - name: PRE-FLIGHT | Remove stale apt lock files
   ansible.builtin.file:
