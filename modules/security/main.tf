@@ -40,13 +40,13 @@ resource "azurerm_network_security_rule" "http" {
 
 # Rule for Traefik HTTPS (for all user traffic)
 resource "azurerm_network_security_rule" "https" {
-  name                        = "AllowHTTPS"
-  priority                    = 120
-  direction                   = "Inbound"
-  access                      = "Allow"
-  protocol                    = "Tcp"
-  source_port_range           = "*"
-  destination_port_range      = "443"
+  name                   = "AllowHTTPS"
+  priority               = 120
+  direction              = "Inbound"
+  access                 = "Allow"
+  protocol               = "Tcp"
+  source_port_range      = "*"
+  destination_port_range = "443"
   # this is a public service, so allow from anywhere (it's an accepted risk)
   source_address_prefix       = "*"
   destination_address_prefix  = "*"
