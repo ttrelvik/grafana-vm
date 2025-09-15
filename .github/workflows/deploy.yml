@@ -24,12 +24,6 @@ jobs:
       ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
       TF_VAR_ssh_public_key: ${{ secrets.SSH_PUBLIC_KEY }}
       TF_VAR_home_ddns_hostname: ${{ secrets.HOME_DDNS_HOSTNAME }}
-      DOMAIN_NAME: ${{ steps.outputs.outputs.fqdn }}
-      ENTRA_TENANT_ID: ${{ secrets.ENTRA_TENANT_ID }}
-      ENTRA_CLIENT_ID: ${{ secrets.ENTRA_CLIENT_ID }}
-      ENTRA_CLIENT_SECRET: ${{ secrets.ENTRA_CLIENT_SECRET }}
-      FORWARD_AUTH_SECRET: ${{ secrets.FORWARD_AUTH_SECRET }}
-      ALLOWED_USERS: ${{ secrets.ALLOWED_USERS }}
 
     steps:
       - name: Checkout Repository
@@ -65,7 +59,13 @@ jobs:
       - name: Run Ansible Playbook
         uses: dawidd6/action-ansible-playbook@v2
         env:
+          # All environment variables needed by Ansible go here
           DOMAIN_NAME: ${{ steps.outputs.outputs.fqdn }}
+          ENTRA_TENANT_ID: ${{ secrets.ENTRA_TENANT_ID }}
+          ENTRA_CLIENT_ID: ${{ secrets.ENTRA_CLIENT_ID }}
+          ENTRA_CLIENT_SECRET: ${{ secrets.ENTRA_CLIENT_SECRET }}
+          FORWARD_AUTH_SECRET: ${{ secrets.FORWARD_AUTH_SECRET }}
+          ALLOWED_USERS: ${{ secrets.ALLOWED_USERS }}
         with:
           playbook: playbook.yml
           directory: ./ansible
