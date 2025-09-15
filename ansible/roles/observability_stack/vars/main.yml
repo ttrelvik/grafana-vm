@@ -1,0 +1,37 @@
+---
+observability_config:
+  acme_email: "letsencrypt@trelvik.net"
+  
+  base_directory: /opt/stack
+  
+  # Individual files to copy
+  files:
+    - name: docker-compose.yml
+      mode: '0644'
+    - name: prometheus.yml  
+      mode: '0644'
+    - name: traefik.yml
+      mode: '0644'
+    # Add more files here as needed
+  
+  # Directories to copy
+  directories:
+    - name: grafana-config
+      src: grafana-config/
+      dest: grafana-config/
+      file_mode: '0644'
+      dir_mode: '0755'
+    - name: promtail-config
+      src: promtail-config/  
+      dest: promtail-config/
+      file_mode: '0644'
+      dir_mode: '0755'
+    # Add more directories here as needed
+  
+  # Special files with custom permissions
+  special_files:
+    - path: acme.json
+      mode: '0600'
+      owner: root
+      group: root
+      state: touch

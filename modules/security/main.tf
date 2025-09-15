@@ -47,6 +47,7 @@ resource "azurerm_network_security_rule" "https" {
   protocol                    = "Tcp"
   source_port_range           = "*"
   destination_port_range      = "443"
+  # this is a public service, so allow from anywhere (it's an accepted risk)
   source_address_prefix       = "*"
   destination_address_prefix  = "*"
   resource_group_name         = var.resource_group_name
