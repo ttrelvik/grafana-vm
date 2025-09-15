@@ -11,7 +11,7 @@ output "vm_public_ip" {
 
 output "ssh_command" {
   description = "The command to SSH into the Grafana VM."
-  value       = "ssh ${var.admin_username}@${module.network.public_ip_address}"
+  value       = "ssh -i ~/.ssh/github_actions_runner ${var.admin_username}@${module.network.public_ip_address}"
 }
 
 output "fqdn" {

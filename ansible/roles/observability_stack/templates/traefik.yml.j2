@@ -19,7 +19,7 @@ providers:
 certificatesResolvers:
   letsencrypt:
     acme:
-      email: "{{ acme_email }}"
+      email: "{{ observability_config.acme_email }}"
       storage: "acme.json"
       httpChallenge:
         entryPoint: "web"
