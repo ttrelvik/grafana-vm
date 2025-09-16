@@ -1,0 +1,39 @@
+name: "Destroy Production Environment"
+
+on:
+  # This workflow can only be triggered manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  destroy:
+    name: "Destroy Production"
+    runs-on: ubuntu-latest
+
+    # Permissions for the 'destroy' job
+    permissions:
+      contents: read
+
+    # Environment variables needed for Terraform to authenticate
+    env:
+      TF_WORKSPACE: grafana-prod
+      ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+      ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+      ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+      TF_VAR_home_ddns_hostname: ${{ secrets.HOME_DD_HOSTNAME }} # Needed for plan
+      TF_VAR_ssh_public_key: ${{ secrets.SSH_PUBLIC_KEY }} # Needed for plan
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+
+      - name: Terraform Init
+        run: terraform init -input=false
+
+      - name: Terraform Destroy
+        run: terraform destroy -auto-approve -input=false
