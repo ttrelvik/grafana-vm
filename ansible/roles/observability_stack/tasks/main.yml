@@ -47,6 +47,8 @@
     ENTRA_CLIENT_SECRET: "{{ lookup('env', 'ENTRA_CLIENT_SECRET') }}"
     FORWARD_AUTH_SECRET: "{{ lookup('env', 'FORWARD_AUTH_SECRET') }}"
     ALLOWED_USERS: "{{ lookup('env', 'ALLOWED_USERS') }}"
+    GRAFANA_OAUTH_CLIENT_SECRET: "{{ lookup('env', 'GRAFANA_OAUTH_CLIENT_SECRET') }}"
+    GRAFANA_OAUTH_ADMIN_GROUP_ID: "{{ lookup('env', 'GRAFANA_OAUTH_ADMIN_GROUP_ID') }}"
   register: compose_result
   retries: 3
   delay: 10
