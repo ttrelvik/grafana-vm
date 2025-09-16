@@ -5,6 +5,10 @@
 
   vars:
     domain_name: "{{ lookup('env', 'DOMAIN_NAME') }}"
+    entra_tenant_id: "{{ lookup('env', 'ENTRA_TENANT_ID') }}"
+    entra_client_id: "{{ lookup('env', 'ENTRA_CLIENT_ID') }}"
+    grafana_oauth_client_secret: "{{ lookup('env', 'GRAFANA_OAUTH_CLIENT_SECRET') }}"
+    grafana_oauth_admin_group_id: "{{ lookup('env', 'GRAFANA_OAUTH_ADMIN_GROUP_ID') }}"
 
   roles:
     - role: docker
