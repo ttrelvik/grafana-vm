@@ -7,7 +7,7 @@ variable "environment_variables" {
       # Add any other dev-specific variables here in the future
     }
     "grafana-prod" = {
-      prefix = "grafana-prod"
+      prefix = "grafana-prod-1"
       # Add any other prod-specific variables here in the future
     }
   }
