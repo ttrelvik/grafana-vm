@@ -1,6 +1,11 @@
 api:
   insecure: true # Enables the Traefik dashboard
 
+# Explicitly enable Prometheus metrics and assign to an entrypoint
+metrics:
+  prometheus:
+    entryPoint: "traefik"
+
 entryPoints:
   web:
     address: ":80"
@@ -11,6 +16,9 @@ entryPoints:
           scheme: "https"
   websecure:
     address: ":443"
+
+  traefik:
+    address: ":8080"
 
 providers:
   docker:
