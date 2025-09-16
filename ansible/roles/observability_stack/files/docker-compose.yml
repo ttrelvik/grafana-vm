@@ -73,13 +73,6 @@ services:
     command: -config.file=/etc/loki/local-config.yaml
     volumes:
       - loki-data:/loki   # named volume for Loki data
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.loki.rule=Host(`loki.${DOMAIN_NAME}`)"
-      - "traefik.http.routers.loki.entrypoints=websecure" 
-      - "traefik.http.routers.loki.tls.certresolver=letsencrypt"
-      - "traefik.http.services.loki.loadbalancer.server.port=3100"
-      - "traefik.http.services.loki.loadbalancer.server.scheme=http" # Ensure Traefik uses HTTP to communicate with Loki
 
   prometheus:
     image: prom/prometheus:latest
