@@ -68,7 +68,6 @@ jobs:
           ENTRA_CLIENT_SECRET: ${{ secrets.ENTRA_CLIENT_SECRET }}
           FORWARD_AUTH_SECRET: ${{ secrets.FORWARD_AUTH_SECRET }}
           ALLOWED_USERS: ${{ secrets.ALLOWED_USERS }}
-          GRAFANA_OAUTH_CLIENT_ID: ${{ secrets.GRAFANA_OAUTH_CLIENT_ID }}
           GRAFANA_OAUTH_CLIENT_SECRET: ${{ secrets.GRAFANA_OAUTH_CLIENT_SECRET }}
           GRAFANA_OAUTH_ADMIN_GROUP_ID: ${{ secrets.GRAFANA_OAUTH_ADMIN_GROUP_ID }}
         with:
