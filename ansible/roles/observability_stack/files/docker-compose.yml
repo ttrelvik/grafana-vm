@@ -104,6 +104,7 @@ services:
       - grafana-data:/var/lib/grafana                           # named volume for Grafana data
       - ./grafana-config/provisioning:/etc/grafana/provisioning # Bind mount for provisioning config
     environment:
+      - "GF_SERVER_ROOT_URL=https://grafana.${DOMAIN_NAME}"
       # Generic Oauth
       - "GF_AUTH_GENERIC_OAUTH_ENABLED=true"
       - "GF_AUTH_GENERIC_OAUTH_NAME=Microsoft"
