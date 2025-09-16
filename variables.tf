@@ -43,7 +43,7 @@ variable "subnet_address_prefixes" {
 variable "vm_size" {
   description = "The size (SKU) of the virtual machine."
   type        = string
-  default     = "Standard_B1s" # Free tier eligible
+  default     = "Standard_B2ms"
 }
 
 variable "admin_username" {
