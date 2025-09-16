@@ -36,7 +36,7 @@ variable "network_security_group_id" {
 variable "vm_size" {
   description = "Size of the virtual machine"
   type        = string
-  default     = "Standard_B1s"
+  default     = "Standard_B2ms"
 }
 
 variable "admin_username" {
