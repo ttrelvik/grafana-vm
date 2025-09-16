@@ -1,6 +1,13 @@
 api:
   insecure: true # Enables the Traefik dashboard
 
+# Enable Logging and configure the Access Log in JSON format
+log:
+  level: INFO
+accessLog:
+  filePath: "/var/log/traefik/access.log"
+  format: "json"
+
 # Explicitly enable Prometheus metrics and assign to an entrypoint
 metrics:
   prometheus:

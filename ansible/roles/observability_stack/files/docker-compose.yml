@@ -12,6 +12,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro  # Docker socket for Traefik to monitor Docker
       - ./traefik.yml:/etc/traefik/traefik.yml:ro     # Bind mount for Traefik config
       - ./acme.json:/acme.json                        # Bind mount for Let's Encrypt certificates
+      - traefik-logs:/var/log/traefik
 
     labels:
       # Global middleware for redirecting HTTP to HTTPS
@@ -140,6 +141,7 @@ services:
       - ./promtail-config:/etc/promtail # bind mount for config
       - promtail-data:/tmp              # named volume for data
       - /var/log/journal:/var/log/journal:ro
+      - traefik-logs:/var/log/traefik:ro
     command: -config.file=/etc/promtail/config.yml
     networks:
       - web
@@ -167,6 +169,7 @@ volumes:
   prometheus-data:
   loki-data:
   promtail-data:
+  traefik-logs:
 
 # Define the shared network
 networks:
