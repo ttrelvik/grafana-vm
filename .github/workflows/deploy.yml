@@ -5,6 +5,8 @@ on:
   push:
     branches:
       - main
+  # This trigger allows you to run the workflow manually
+  workflow_dispatch:
 
 jobs:
   deploy:
