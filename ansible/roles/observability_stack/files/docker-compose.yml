@@ -103,7 +103,19 @@ services:
     volumes:
       - grafana-data:/var/lib/grafana                           # named volume for Grafana data
       - ./grafana-config/provisioning:/etc/grafana/provisioning # Bind mount for provisioning config
-      - ./grafana.ini:/etc/grafana/grafana.ini
+    environment:
+      # Generic Oauth
+      - "GF_AUTH_GENERIC_OAUTH_ENABLED=true"
+      - "GF_AUTH_GENERIC_OAUTH_NAME=Microsoft"
+      - "GF_AUTH_GENERIC_OAUTH_ALLOW_SIGN_UP=true"
+      - "GF_AUTH_GENERIC_OAUTH_CLIENT_ID=${ENTRA_CLIENT_ID}"
+      - "GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET=${GRAFANA_OAUTH_CLIENT_SECRET}"
+      - "GF_AUTH_GENERIC_OAUTH_SCOPES=openid email profile"
+      - "GF_AUTH_GENERIC_OAUTH_AUTH_URL=https://login.microsoftonline.com/${ENTRA_TENANT_ID}/oauth2/v2.0/authorize"
+      - "GF_AUTH_GENERIC_OAUTH_TOKEN_URL=https://login.microsoftonline.com/${ENTRA_TENANT_ID}/oauth2/v2.0/token"
+      - "GF_AUTH_GENERIC_OAUTH_API_URL=https://graph.microsoft.com/v1.0/me"
+      # Role Mapping from Group
+      - "GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH=contains(groups, '${GRAFANA_OAUTH_ADMIN_GROUP_ID}') && 'Admin' || 'Viewer'"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.grafana.rule=Host(`grafana.${DOMAIN_NAME}`)"

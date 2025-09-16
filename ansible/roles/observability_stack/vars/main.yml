@@ -17,10 +17,6 @@ observability_config:
       dest_name: traefik.yml # The final name on the server
       src_name: traefik.yml.j2 # The source template name
       mode: '0644'
-    - name: grafana.ini
-      dest_name: grafana.ini
-      src_name: grafana.ini.j2
-      mode: '0644'
   
   # Directories to copy
   directories:
