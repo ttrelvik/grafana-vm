@@ -1,6 +1,6 @@
 # Automated Observability Stack on Azure
 
-This project deploys a complete, production-ready observability stack (Grafana, Loki, Prometheus, Traefik) onto a single Azure Virtual Machine with enterprise-grade authentication through Microsoft Entra ID (Azure AD). The entire lifecycle—from infrastructure provisioning to application deployment—is managed through a fully automated, GitOps-centric workflow using Terraform, Ansible, and GitHub Actions.
+This project deploys a complete, production-ready observability stack (Grafana, Loki, Prometheus, Traefik) onto a single Azure Virtual Machine with enterprise-grade authentication through Microsoft Entra ID (Azure AD). The entire lifecycle,from infrastructure provisioning to application deployment, is managed through a fully automated, GitOps-centric workflow using Terraform, Ansible, and GitHub Actions.
 
 ## 🏗️ Architecture Overview
 
