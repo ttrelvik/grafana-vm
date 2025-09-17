@@ -101,22 +101,22 @@ You need to create **one** app registration in Entra ID with **two** client secr
    - **Secret 1**: `forward-auth-secret` → Save the **secret value** for `ENTRA_CLIENT_SECRET`
    - **Secret 2**: `grafana-oauth-secret` → Save the **secret value** for `GRAFANA_OAUTH_CLIENT_SECRET`
 
-#### Configure API Permissions
-
-1. Go to "API permissions" → Add permission → Microsoft Graph → Delegated permissions:
-   - `openid`
-   - `email` 
-   - `profile`
-   - `User.Read`
-   - `Directory.Read.All`
-2. Grant admin consent for the permissions
-
 #### Entra ID Group for Grafana Admins (Optional but Recommended)
 
 1. Go to Entra ID → Groups → New group
 2. Create a security group (e.g., `Grafana-Admins`)
 3. Add users who should have admin access to Grafana
 4. Note the **Object ID** of the group
+
+#### Token Configuration
+
+Configure the Auth token to include security group membership.
+
+1. Go to "Token Configuration"
+2. Click "Add groups claim"
+   - Select "Security groups"
+   - "ID" > "Group ID"
+   - Click "Add"
 
 ### Step 5: SSH Key Pair Generation
 
@@ -296,7 +296,7 @@ Grafana comes pre-configured with:
 
 #### 3. Authentication Failures
 - Verify Entra ID app registrations have correct redirect URIs
-- Ensure all required API permissions are granted and admin consented
+- Ensure "Token Configuration" includes Security Groups, and that the user has the proper group membership.
 - Check that both client secrets are valid and correctly configured in GitHub secrets
 - Check that user emails are in the `ALLOWED_USERS` list
 
@@ -312,14 +312,14 @@ SSH into the VM using:
 ssh -i ~/.ssh/github_actions_runner azureuser@VM_PUBLIC_IP
 ```
 
-View container logs:
+View container logs (from VM):
 ```bash
 docker logs grafana
 docker logs traefik
 docker logs prometheus
 ```
 
-Check service status:
+Check service status (from VM):
 ```bash
 docker ps
 docker compose ps
